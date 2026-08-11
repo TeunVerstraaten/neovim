@@ -43,15 +43,24 @@ require("lazy").setup({
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 
 	{ "neovim/nvim-lspconfig" },
-
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
+			"onsails/lspkind.nvim",
+			"nvim-tree/nvim-web-devicons",
 		},
 	},
+	-- {
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	dependencies = {
+	-- 		"hrsh7th/cmp-nvim-lsp",
+	-- 		"hrsh7th/cmp-buffer",
+	-- 		"hrsh7th/cmp-path",
+	-- 	},
+	-- },
 
 	{
 		"stevearc/conform.nvim",
@@ -169,6 +178,7 @@ require("lazy").setup({
 			},
 		},
 	},
+	{ "j-hui/fidget.nvim" },
 })
 local dap = require("dap")
 
@@ -202,26 +212,109 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- lsp
+
+-----------------------------------------------------------
+-- Completion
+-----------------------------------------------------------
+
 local cmp = require("cmp")
+local lspkind = require("lspkind")
 
 cmp.setup({
-	sources = {
-		{ name = "nvim_lsp" },
-		{ name = "buffer" },
-		{ name = "path" },
+	completion = {
+		completeopt = "menu,menuone,noinsert",
+	},
+
+	window = {
+		completion = cmp.config.window.bordered({
+			border = "rounded",
+			winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+			scrollbar = true,
+		}),
+
+		documentation = cmp.config.window.bordered({
+			border = "rounded",
+			winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
+		}),
+	},
+
+	formatting = {
+		format = lspkind.cmp_format({
+			mode = "symbol_text",
+			maxwidth = 50,
+
+			before = function(entry, vim_item)
+				vim_item.menu = ({
+					nvim_lsp = "[LSP]",
+					buffer = "[Buffer]",
+					path = "[Path]",
+				})[entry.source.name]
+
+				return vim_item
+			end,
+		}),
+	},
+
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp", priority = 100 },
+	}, {
+		{ name = "buffer", priority = 50 },
+		{ name = "path", priority = 25 },
+	}),
+
+	sorting = {
+		priority_weight = 2,
+		comparators = {
+			cmp.config.compare.offset,
+			cmp.config.compare.exact,
+			cmp.config.compare.score,
+			cmp.config.compare.recently_used,
+			cmp.config.compare.locality,
+			cmp.config.compare.kind,
+			cmp.config.compare.sort_text,
+			cmp.config.compare.length,
+			cmp.config.compare.order,
+		},
 	},
 
 	mapping = cmp.mapping.preset.insert({
 		["<C-Space>"] = cmp.mapping.complete(),
 
 		["<CR>"] = cmp.mapping.confirm({
-			select = true,
+			select = false,
 		}),
 
 		["<Tab>"] = cmp.mapping.select_next_item(),
 		["<S-Tab>"] = cmp.mapping.select_prev_item(),
+
+		["<C-e>"] = cmp.mapping.abort(),
 	}),
+
+	experimental = {
+		ghost_text = false,
+	},
 })
+
+-- local cmp = require("cmp")
+--
+-- cmp.setup({
+-- 	sources = {
+-- 		{ name = "nvim_lsp" },
+-- 		{ name = "buffer" },
+-- 		{ name = "path" },
+-- 	},
+--
+-- 	mapping = cmp.mapping.preset.insert({
+-- 		["<C-Space>"] = cmp.mapping.complete(),
+--
+-- 		["<CR>"] = cmp.mapping.confirm({
+-- 			select = true,
+-- 		}),
+--
+-- 		["<Tab>"] = cmp.mapping.select_next_item(),
+-- 		["<S-Tab>"] = cmp.mapping.select_prev_item(),
+-- 	}),
+-- })
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -303,11 +396,9 @@ vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Find recent files"
 vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Find diagnostics" })
 vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
 
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
-
-vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "Toggle terminal" })
--- vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]])
 -- Terminal
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
+vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "Toggle terminal" })
 vim.keymap.set("n", "<C-\\>", focus_terminal, { desc = "Focus bottom terminal" })
 vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
 -- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
