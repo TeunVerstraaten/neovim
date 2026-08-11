@@ -104,6 +104,8 @@ require("lazy").setup({
 		opts = {},
 	},
 })
+
+-- lsp
 vim.diagnostic.config({
 	virtual_text = true,
 	signs = true,
@@ -111,7 +113,12 @@ vim.diagnostic.config({
 	update_in_insert = false,
 	severity_sort = true,
 })
-
+vim.lsp.config("clangd", {
+	cmd = {
+		"clangd",
+		"--background-index",
+	},
+})
 vim.lsp.enable("clangd")
 
 -- terminal
@@ -156,11 +163,20 @@ local function leave_terminal()
 		vim.api.nvim_set_current_win(terminal.previous_win)
 	end
 end
-local builtin = require("telescope.builtin")
+
+vim.api.nvim_create_autocmd("WinEnter", {
+	callback = function()
+		if vim.bo.buftype == "terminal" then
+			vim.cmd("startinsert")
+		end
+	end,
+})
 
 --------------------------------------------------------
 ---------------  KEYMAPS   -----------------------------
 --------------------------------------------------------
+local builtin = require("telescope.builtin")
+
 vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
 vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Find keymaps" })
 vim.keymap.set("n", "<leader>fw", builtin.live_grep, { desc = "Find word" })
@@ -185,10 +201,6 @@ vim.keymap.set("n", "gd", builtin.lsp_definitions, {
 	desc = "Go to definition",
 })
 
-vim.keymap.set("n", "gD", builtin.lsp_declarations, {
-	desc = "Go to declaration",
-})
-
 vim.keymap.set("n", "gi", builtin.lsp_implementations, {
 	desc = "Go to implementation",
 })
@@ -204,4 +216,4 @@ vim.keymap.set("n", "gt", builtin.lsp_type_definitions, {
 --------------------------------------------------------
 ---------------  OPTIONS   -----------------------------
 --------------------------------------------------------
-vvim.cmd.colorscheme("catppuccin")
+vim.cmd.colorscheme("catppuccin")
