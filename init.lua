@@ -304,3 +304,4 @@ vim.keymap.set("v", "c", '"_c')
 --------------------------------------------------------
 vim.cmd.colorscheme("catppuccin")
 vim.opt.clipboard = "unnamedplus"
+vim.opt.undofile = true
