@@ -103,7 +103,54 @@ require("lazy").setup({
 		event = "VeryLazy",
 		opts = {},
 	},
+
+	{
+		"rcarriga/nvim-dap-ui",
+		dependencies = {
+			"mfussenegger/nvim-dap",
+			"nvim-neotest/nvim-nio",
+		},
+		config = function()
+			local dap = require("dap")
+			local dapui = require("dapui")
+
+			dapui.setup()
+
+			dap.listeners.after.event_initialized["dapui_config"] = function()
+				dapui.open()
+			end
+
+			dap.listeners.before.event_terminated["dapui_config"] = function()
+				dapui.close()
+			end
+
+			dap.listeners.before.event_exited["dapui_config"] = function()
+				dapui.close()
+			end
+		end,
+	},
 })
+local dap = require("dap")
+
+dap.adapters["lldb"] = {
+	type = "executable",
+	command = "lldb-dap",
+	name = "lldb",
+}
+
+dap.configurations.cpp = {
+	{
+		name = "Launch",
+		type = "lldb",
+		request = "launch",
+		program = function()
+			return vim.fn.input("Path to executable: ", vim.fn.getcwd(), "file")
+		end,
+		cwd = "${workspaceFolder}",
+		stopOnEntry = true,
+		args = {},
+	},
+}
 
 -- lsp
 vim.diagnostic.config({
@@ -197,21 +244,23 @@ vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
 
 local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", "gd", builtin.lsp_definitions, {
-	desc = "Go to definition",
-})
+-- lsp stuff
+vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
+vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "Go to implementation" })
+vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Find references" })
+vim.keymap.set("n", "gt", builtin.lsp_type_definitions, { desc = "Go to type definition" })
 
-vim.keymap.set("n", "gi", builtin.lsp_implementations, {
-	desc = "Go to implementation",
-})
-
-vim.keymap.set("n", "gr", builtin.lsp_references, {
-	desc = "Find references",
-})
-
-vim.keymap.set("n", "gt", builtin.lsp_type_definitions, {
-	desc = "Go to type definition",
-})
+-- debugging
+vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Continue" })
+vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Debug: Step over" })
+vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Debug: Step into" })
+vim.keymap.set("n", "<F12>", dap.step_out, { desc = "Debug: Step out" })
+vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Debug: Toggle breakpoint" })
+vim.keymap.set("n", "<leader>dB", function()
+	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end, { desc = "Debug: Conditional breakpoint" })
+vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Debug: REPL" })
+vim.keymap.set("n", "<leader>dq", dap.terminate, { desc = "Debug: Quit" })
 
 --------------------------------------------------------
 ---------------  OPTIONS   -----------------------------
