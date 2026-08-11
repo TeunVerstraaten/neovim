@@ -38,13 +38,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	-- Telescope
 	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 
-	-- Treesitter
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 
-	-- LSP
 	{ "neovim/nvim-lspconfig" },
 
 	{
@@ -79,10 +76,7 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 		},
 		opts = {
-			window = {
-				width = 30,
-			},
-
+			window = { width = 30 },
 			filesystem = {
 				commands = {
 					delete = function(state)
@@ -101,7 +95,6 @@ require("lazy").setup({
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
-		opts = {},
 	},
 
 	{
