@@ -47,7 +47,6 @@ require("lazy").setup({
 	-- LSP
 	{ "neovim/nvim-lspconfig" },
 
-	-- Completion
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -98,6 +97,7 @@ require("lazy").setup({
 			},
 		},
 	},
+
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
@@ -152,7 +152,39 @@ dap.configurations.cpp = {
 	},
 }
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		vim.highlight.on_yank({
+			higroup = "Visual",
+			timeout = 200,
+		})
+	end,
+})
+
 -- lsp
+local cmp = require("cmp")
+
+cmp.setup({
+	sources = {
+		{ name = "nvim_lsp" },
+		{ name = "buffer" },
+		{ name = "path" },
+	},
+
+	mapping = cmp.mapping.preset.insert({
+		["<C-Space>"] = cmp.mapping.complete(),
+
+		["<CR>"] = cmp.mapping.confirm({
+			select = true,
+		}),
+
+		["<Tab>"] = cmp.mapping.select_next_item(),
+		["<S-Tab>"] = cmp.mapping.select_prev_item(),
+	}),
+})
+
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 vim.diagnostic.config({
 	virtual_text = true,
 	signs = true,
@@ -160,20 +192,18 @@ vim.diagnostic.config({
 	update_in_insert = false,
 	severity_sort = true,
 })
+
 vim.lsp.config("clangd", {
 	cmd = {
 		"clangd",
 		"--background-index",
 	},
+	capabilities = capabilities,
 })
 vim.lsp.enable("clangd")
 
 -- terminal
-local terminal = {
-	buf = nil,
-	win = nil,
-	previous_win = nil,
-}
+local terminal = { buf = nil, win = nil, previous_win = nil }
 
 local function terminal_is_open()
 	return terminal.win ~= nil and vim.api.nvim_win_is_valid(terminal.win)
@@ -242,8 +272,6 @@ vim.keymap.set("n", "<C-\\>", focus_terminal, { desc = "Focus bottom terminal" }
 vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
 -- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
 
-local builtin = require("telescope.builtin")
-
 -- lsp stuff
 vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
 vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "Go to implementation" })
@@ -262,7 +290,17 @@ end, { desc = "Debug: Conditional breakpoint" })
 vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Debug: REPL" })
 vim.keymap.set("n", "<leader>dq", dap.terminate, { desc = "Debug: Quit" })
 
+-- Don't overwrite the clipboard when deleting or changing
+vim.keymap.set("n", "d", '"_d')
+vim.keymap.set("n", "D", '"_D')
+vim.keymap.set("n", "c", '"_c')
+vim.keymap.set("n", "C", '"_C')
+
+vim.keymap.set("v", "d", '"_d')
+vim.keymap.set("v", "c", '"_c')
+
 --------------------------------------------------------
 ---------------  OPTIONS   -----------------------------
 --------------------------------------------------------
 vim.cmd.colorscheme("catppuccin")
+vim.opt.clipboard = "unnamedplus"
