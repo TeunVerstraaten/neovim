@@ -189,11 +189,11 @@ vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
 vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
 
 vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "Toggle terminal" })
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]])
+-- vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]])
 -- Terminal
 vim.keymap.set("n", "<C-\\>", focus_terminal, { desc = "Focus bottom terminal" })
 vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
-vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
+-- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
 
 local builtin = require("telescope.builtin")
 
