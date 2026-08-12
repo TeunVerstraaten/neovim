@@ -53,7 +53,6 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 		},
 	},
-
 	{
 		"stevearc/conform.nvim",
 		opts = {
@@ -185,9 +184,9 @@ vim.api.nvim_create_user_command("Cppcheck", function()
 	vim.fn.setqflist({}, "r", {
 		title = "cppcheck",
 		lines = vim.fn.systemlist(
-			"cppcheck --project=build/compile_commands.json " .. "--enable=all"
-			-- .. "--enable=warning,style,performance,portability "
-			-- .. "--suppress=missingIncludeSystem"
+			"cppcheck --project=build/compile_commands.json "
+				.. "--enable=warning,style,performance,portability "
+				.. "--suppress=missingIncludeSystem"
 		),
 	})
 
