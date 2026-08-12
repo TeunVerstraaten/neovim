@@ -171,6 +171,12 @@ require("lazy").setup({
 		},
 	},
 	{ "j-hui/fidget.nvim" },
+	{
+		"nvim-telescope/telescope-ui-select.nvim",
+		config = function()
+			require("telescope").load_extension("ui-select")
+		end,
+	},
 })
 
 -- cppcheck
@@ -391,10 +397,13 @@ vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
 -- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
 
 -- lsp stuff
+require("telescope").load_extension("ui-select")
+
 vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
 vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "Go to implementation" })
 vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Find references" })
 vim.keymap.set("n", "gt", builtin.lsp_type_definitions, { desc = "Go to type definition" })
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, { desc = "Code actions" })
 
 -- debugging
 vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Continue" })
