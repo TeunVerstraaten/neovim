@@ -374,14 +374,14 @@ vim.api.nvim_create_autocmd("WinEnter", {
 --------------------------------------------------------
 local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
-vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Find keymaps" })
+vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Find files" })
+vim.keymap.set("n", "<leader>k", builtin.keymaps, { desc = "Find keymaps" })
 vim.keymap.set("n", "<leader>/", builtin.live_grep, { desc = "Find word" })
-vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find buffers" })
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help" })
-vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Find recent files" })
-vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Find diagnostics" })
-vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
+vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "Find buffers" })
+vim.keymap.set("n", "<leader>h", builtin.help_tags, { desc = "Find help" })
+vim.keymap.set("n", "<leader>r", builtin.oldfiles, { desc = "Find recent files" })
+vim.keymap.set("n", "<leader>D", builtin.diagnostics, { desc = "Find diagnostics" })
+-- vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
 
 -- Terminal
 vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
