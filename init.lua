@@ -53,14 +53,6 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 		},
 	},
-	-- {
-	-- 	"hrsh7th/nvim-cmp",
-	-- 	dependencies = {
-	-- 		"hrsh7th/cmp-nvim-lsp",
-	-- 		"hrsh7th/cmp-buffer",
-	-- 		"hrsh7th/cmp-path",
-	-- 	},
-	-- },
 
 	{
 		"stevearc/conform.nvim",
@@ -180,6 +172,22 @@ require("lazy").setup({
 	},
 	{ "j-hui/fidget.nvim" },
 })
+
+-- cppcheck
+vim.api.nvim_create_user_command("Cppcheck", function()
+	vim.fn.setqflist({}, "r", {
+		title = "cppcheck",
+		lines = vim.fn.systemlist(
+			"cppcheck --project=build/compile_commands.json " .. "--enable=all"
+			-- .. "--enable=warning,style,performance,portability "
+			-- .. "--suppress=missingIncludeSystem"
+		),
+	})
+
+	vim.cmd("copen")
+end, {})
+
+-- dap debugging
 local dap = require("dap")
 
 dap.adapters["lldb"] = {
@@ -294,27 +302,6 @@ cmp.setup({
 		ghost_text = false,
 	},
 })
-
--- local cmp = require("cmp")
---
--- cmp.setup({
--- 	sources = {
--- 		{ name = "nvim_lsp" },
--- 		{ name = "buffer" },
--- 		{ name = "path" },
--- 	},
---
--- 	mapping = cmp.mapping.preset.insert({
--- 		["<C-Space>"] = cmp.mapping.complete(),
---
--- 		["<CR>"] = cmp.mapping.confirm({
--- 			select = true,
--- 		}),
---
--- 		["<Tab>"] = cmp.mapping.select_next_item(),
--- 		["<S-Tab>"] = cmp.mapping.select_prev_item(),
--- 	}),
--- })
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
