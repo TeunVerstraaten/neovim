@@ -38,11 +38,90 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+	--------------------------------------------------------
+	-- Telescope
+	--------------------------------------------------------
+	{
+		"nvim-telescope/telescope.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			{
+				"nvim-telescope/telescope-fzf-native.nvim",
+				build = "make",
+			},
+		},
+		config = function()
+			local telescope = require("telescope")
 
-	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+			telescope.setup({
+				defaults = {
+					sorting_strategy = "ascending",
 
+					layout_strategy = "flex",
+
+					layout_config = {
+						horizontal = {
+							preview_width = 0.55,
+						},
+						vertical = {
+							preview_height = 0.5,
+						},
+					},
+
+					prompt_prefix = "  ",
+					selection_caret = "  ",
+
+					file_ignore_patterns = {
+						"%.git/",
+						"build/",
+						"node_modules/",
+					},
+				},
+
+				pickers = {
+					find_files = {
+						find_command = {
+							"fd",
+							"--type",
+							"f",
+							"--hidden",
+							"--exclude",
+							".git",
+						},
+					},
+
+					live_grep = {
+						additional_args = function()
+							return {
+								"--hidden",
+								"--glob",
+								"!**/.git/**",
+							}
+						end,
+					},
+				},
+			})
+
+			telescope.load_extension("fzf")
+		end,
+	},
+
+	--------------------------------------------------------
+	-- Treesitter
+	--------------------------------------------------------
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+	},
+
+	--------------------------------------------------------
+	-- LSP
+	--------------------------------------------------------
 	{ "neovim/nvim-lspconfig" },
+
+	--------------------------------------------------------
+	-- Completion
+	--------------------------------------------------------
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -53,6 +132,10 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 		},
 	},
+
+	--------------------------------------------------------
+	-- Formatting
+	--------------------------------------------------------
 	{
 		"stevearc/conform.nvim",
 		opts = {
@@ -62,22 +145,40 @@ require("lazy").setup({
 				c = { "clang-format" },
 				json = { "prettier" },
 			},
-			format_on_save = { timeout_ms = 500, lsp_fallback = true },
+
+			format_on_save = {
+				timeout_ms = 500,
+				lsp_fallback = true,
+			},
 		},
 	},
 
-	{ "mg979/vim-visual-multi", branch = "master" },
+	--------------------------------------------------------
+	-- Multiple cursors
+	--------------------------------------------------------
+	{
+		"mg979/vim-visual-multi",
+		branch = "master",
+	},
 
+	--------------------------------------------------------
+	-- Neo-tree
+	--------------------------------------------------------
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
+
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
 			"nvim-tree/nvim-web-devicons",
 		},
+
 		opts = {
-			window = { width = 30 },
+			window = {
+				width = 30,
+			},
+
 			filesystem = {
 				commands = {
 					delete = function(state)
@@ -93,17 +194,25 @@ require("lazy").setup({
 		},
 	},
 
+	--------------------------------------------------------
+	-- Which-key
+	--------------------------------------------------------
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 	},
 
+	--------------------------------------------------------
+	-- DAP UI
+	--------------------------------------------------------
 	{
 		"rcarriga/nvim-dap-ui",
+
 		dependencies = {
 			"mfussenegger/nvim-dap",
 			"nvim-neotest/nvim-nio",
 		},
+
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
@@ -123,10 +232,17 @@ require("lazy").setup({
 			end
 		end,
 	},
+
+	--------------------------------------------------------
+	-- Flash
+	--------------------------------------------------------
 	{
 		"folke/flash.nvim",
+
 		event = "VeryLazy",
+
 		opts = {},
+
 		keys = {
 			{
 				"s",
@@ -136,6 +252,7 @@ require("lazy").setup({
 				end,
 				desc = "Flash",
 			},
+
 			{
 				"S",
 				mode = { "n", "x", "o" },
@@ -144,6 +261,7 @@ require("lazy").setup({
 				end,
 				desc = "Flash Treesitter",
 			},
+
 			{
 				"r",
 				mode = "o",
@@ -152,6 +270,7 @@ require("lazy").setup({
 				end,
 				desc = "Remote Flash",
 			},
+
 			{
 				"R",
 				mode = { "o", "x" },
@@ -160,6 +279,7 @@ require("lazy").setup({
 				end,
 				desc = "Treesitter Search",
 			},
+
 			{
 				"<c-s>",
 				mode = { "c" },
@@ -170,19 +290,42 @@ require("lazy").setup({
 			},
 		},
 	},
+
+	--------------------------------------------------------
+	-- Fidget
+	--------------------------------------------------------
 	{ "j-hui/fidget.nvim" },
+
+	--------------------------------------------------------
+	-- Telescope UI select
+	--------------------------------------------------------
 	{
 		"nvim-telescope/telescope-ui-select.nvim",
+
 		config = function()
 			require("telescope").load_extension("ui-select")
 		end,
 	},
+
+	--------------------------------------------------------
+	-- Catppuccin
+	--------------------------------------------------------
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
+		flavour = "frappe",
+	},
 })
 
--- cppcheck
+--------------------------------------------------------
+-- Cppcheck
+--------------------------------------------------------
+
 vim.api.nvim_create_user_command("Cppcheck", function()
 	vim.fn.setqflist({}, "r", {
 		title = "cppcheck",
+
 		lines = vim.fn.systemlist(
 			"cppcheck --project=build/compile_commands.json "
 				.. "--enable=warning,style,performance,portability "
@@ -193,7 +336,10 @@ vim.api.nvim_create_user_command("Cppcheck", function()
 	vim.cmd("copen")
 end, {})
 
--- dap debugging
+--------------------------------------------------------
+-- DAP debugging
+--------------------------------------------------------
+
 local dap = require("dap")
 
 dap.adapters["lldb"] = {
@@ -207,14 +353,20 @@ dap.configurations.cpp = {
 		name = "Launch",
 		type = "lldb",
 		request = "launch",
+
 		program = function()
 			return vim.fn.input("Path to executable: ", vim.fn.getcwd(), "file")
 		end,
+
 		cwd = "${workspaceFolder}",
 		stopOnEntry = true,
 		args = {},
 	},
 }
+
+--------------------------------------------------------
+-- Highlight yanked text
+--------------------------------------------------------
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
@@ -225,11 +377,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- lsp
-
------------------------------------------------------------
+--------------------------------------------------------
 -- Completion
------------------------------------------------------------
+--------------------------------------------------------
 
 local cmp = require("cmp")
 local lspkind = require("lspkind")
@@ -270,14 +420,24 @@ cmp.setup({
 	},
 
 	sources = cmp.config.sources({
-		{ name = "nvim_lsp", priority = 100 },
+		{
+			name = "nvim_lsp",
+			priority = 100,
+		},
 	}, {
-		{ name = "buffer", priority = 50 },
-		{ name = "path", priority = 25 },
+		{
+			name = "buffer",
+			priority = 50,
+		},
+		{
+			name = "path",
+			priority = 25,
+		},
 	}),
 
 	sorting = {
 		priority_weight = 2,
+
 		comparators = {
 			cmp.config.compare.offset,
 			cmp.config.compare.exact,
@@ -311,6 +471,10 @@ cmp.setup({
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+--------------------------------------------------------
+-- Diagnostics
+--------------------------------------------------------
+
 vim.diagnostic.config({
 	virtual_text = true,
 	signs = true,
@@ -319,17 +483,30 @@ vim.diagnostic.config({
 	severity_sort = true,
 })
 
+--------------------------------------------------------
+-- LSP
+--------------------------------------------------------
+
 vim.lsp.config("clangd", {
 	cmd = {
 		"clangd",
 		"--background-index",
 	},
+
 	capabilities = capabilities,
 })
+
 vim.lsp.enable("clangd")
 
--- terminal
-local terminal = { buf = nil, win = nil, previous_win = nil }
+--------------------------------------------------------
+-- Terminal
+--------------------------------------------------------
+
+local terminal = {
+	buf = nil,
+	win = nil,
+	previous_win = nil,
+}
 
 local function terminal_is_open()
 	return terminal.win ~= nil and vim.api.nvim_win_is_valid(terminal.win)
@@ -350,6 +527,7 @@ local function focus_terminal()
 	else
 		-- Remember the current window before switching
 		terminal.previous_win = vim.api.nvim_get_current_win()
+
 		vim.api.nvim_set_current_win(terminal.win)
 	end
 
@@ -376,48 +554,134 @@ vim.api.nvim_create_autocmd("WinEnter", {
 })
 
 --------------------------------------------------------
----------------  KEYMAPS   -----------------------------
+-- KEYMAPS
 --------------------------------------------------------
+
 local builtin = require("telescope.builtin")
 
-vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Find files" })
-vim.keymap.set("n", "<leader>k", builtin.keymaps, { desc = "Find keymaps" })
-vim.keymap.set("n", "<leader>/", builtin.live_grep, { desc = "Find word" })
-vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "Find buffers" })
-vim.keymap.set("n", "<leader>h", builtin.help_tags, { desc = "Find help" })
-vim.keymap.set("n", "<leader>r", builtin.oldfiles, { desc = "Find recent files" })
-vim.keymap.set("n", "<leader>D", builtin.diagnostics, { desc = "Find diagnostics" })
--- vim.keymap.set("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
+-- Telescope fuzzy finders
+vim.keymap.set("n", "<leader>f", builtin.find_files, {
+	desc = "Find files",
+})
 
--- Terminal
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
-vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "Toggle terminal" })
-vim.keymap.set("n", "<C-\\>", focus_terminal, { desc = "Focus bottom terminal" })
-vim.keymap.set("t", "<C-\\>", leave_terminal, { desc = "Return from terminal" })
--- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, { desc = "Exit terminal" })
+vim.keymap.set("n", "<leader>k", builtin.keymaps, {
+	desc = "Find keymaps",
+})
 
--- lsp stuff
-require("telescope").load_extension("ui-select")
+vim.keymap.set("n", "<leader>/", builtin.live_grep, {
+	desc = "Find word",
+})
 
-vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
-vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "Go to implementation" })
-vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Find references" })
-vim.keymap.set("n", "gt", builtin.lsp_type_definitions, { desc = "Go to type definition" })
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, { desc = "Code actions" })
+vim.keymap.set("n", "<leader>b", builtin.buffers, {
+	desc = "Find buffers",
+})
 
--- debugging
-vim.keymap.set("n", "<F5>", dap.continue, { desc = "Debug: Continue" })
-vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Debug: Step over" })
-vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Debug: Step into" })
-vim.keymap.set("n", "<F12>", dap.step_out, { desc = "Debug: Step out" })
-vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Debug: Toggle breakpoint" })
+vim.keymap.set("n", "<leader>h", builtin.help_tags, {
+	desc = "Find help",
+})
+
+vim.keymap.set("n", "<leader>r", builtin.oldfiles, {
+	desc = "Find recent files",
+})
+
+vim.keymap.set("n", "<leader>D", builtin.diagnostics, {
+	desc = "Find diagnostics",
+})
+
+-- vim.keymap.set("n", "<leader>fc", builtin.commands, {
+-- 	desc = "Find commands",
+-- })
+
+--------------------------------------------------------
+-- File explorer / terminal
+--------------------------------------------------------
+
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", {
+	desc = "Toggle file explorer",
+})
+
+vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<cr>", {
+	desc = "Toggle terminal",
+})
+
+vim.keymap.set("n", "<C-\\>", focus_terminal, {
+	desc = "Focus bottom terminal",
+})
+
+vim.keymap.set("t", "<C-\\>", leave_terminal, {
+	desc = "Return from terminal",
+})
+
+-- vim.keymap.set("t", "<Esc><Esc>", leave_terminal, {
+-- 	desc = "Exit terminal",
+-- })
+
+--------------------------------------------------------
+-- LSP stuff
+--------------------------------------------------------
+
+vim.keymap.set("n", "gd", builtin.lsp_definitions, {
+	desc = "Go to definition",
+})
+
+vim.keymap.set("n", "gi", builtin.lsp_implementations, {
+	desc = "Go to implementation",
+})
+
+vim.keymap.set("n", "gr", builtin.lsp_references, {
+	desc = "Find references",
+})
+
+vim.keymap.set("n", "gt", builtin.lsp_type_definitions, {
+	desc = "Go to type definition",
+})
+
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {
+	desc = "Code actions",
+})
+
+--------------------------------------------------------
+-- Debugging
+--------------------------------------------------------
+
+vim.keymap.set("n", "<F5>", dap.continue, {
+	desc = "Debug: Continue",
+})
+
+vim.keymap.set("n", "<F10>", dap.step_over, {
+	desc = "Debug: Step over",
+})
+
+vim.keymap.set("n", "<F11>", dap.step_into, {
+	desc = "Debug: Step into",
+})
+
+vim.keymap.set("n", "<F12>", dap.step_out, {
+	desc = "Debug: Step out",
+})
+
+vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, {
+	desc = "Debug: Toggle breakpoint",
+})
+
 vim.keymap.set("n", "<leader>dB", function()
 	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-end, { desc = "Debug: Conditional breakpoint" })
-vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Debug: REPL" })
-vim.keymap.set("n", "<leader>dq", dap.terminate, { desc = "Debug: Quit" })
+end, {
+	desc = "Debug: Conditional breakpoint",
+})
 
--- Don't overwrite the clipboard when deleting or changing
+vim.keymap.set("n", "<leader>dr", dap.repl.open, {
+	desc = "Debug: REPL",
+})
+
+vim.keymap.set("n", "<leader>dq", dap.terminate, {
+	desc = "Debug: Quit",
+})
+
+--------------------------------------------------------
+-- Don't overwrite clipboard when deleting/changing
+--------------------------------------------------------
+
 vim.keymap.set("n", "d", '"_d')
 vim.keymap.set("n", "D", '"_D')
 vim.keymap.set("n", "c", '"_c')
@@ -427,8 +691,10 @@ vim.keymap.set("v", "d", '"_d')
 vim.keymap.set("v", "c", '"_c')
 
 --------------------------------------------------------
----------------  OPTIONS   -----------------------------
+-- Options
 --------------------------------------------------------
-vim.cmd.colorscheme("catppuccin")
+
+vim.cmd.colorscheme("catppuccin-frappe")
+
 vim.opt.clipboard = "unnamedplus"
 vim.opt.undofile = true
