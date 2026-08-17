@@ -144,6 +144,7 @@ require("lazy").setup({
 				cpp = { "clang-format" },
 				c = { "clang-format" },
 				json = { "prettier" },
+				python = { "ruff_format" },
 			},
 
 			format_on_save = {
@@ -497,6 +498,12 @@ vim.lsp.config("clangd", {
 })
 
 vim.lsp.enable("clangd")
+
+vim.lsp.config("basedpyright", {
+	capabilities = capabilities,
+})
+
+vim.lsp.enable("basedpyright")
 
 --------------------------------------------------------
 -- Terminal
