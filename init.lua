@@ -499,12 +499,6 @@ vim.lsp.config("clangd", {
 
 vim.lsp.enable("clangd")
 
-vim.lsp.config("basedpyright", {
-	capabilities = capabilities,
-})
-
-vim.lsp.enable("basedpyright")
-
 --------------------------------------------------------
 -- Terminal
 --------------------------------------------------------
@@ -587,7 +581,7 @@ vim.keymap.set("n", "<leader>h", builtin.help_tags, {
 	desc = "Find help",
 })
 
-vim.keymap.set("n", "<leader>r", builtin.oldfiles, {
+vim.keymap.set("n", "<leader>R", builtin.oldfiles, {
 	desc = "Find recent files",
 })
 
@@ -635,7 +629,13 @@ vim.keymap.set("n", "gi", builtin.lsp_implementations, {
 	desc = "Go to implementation",
 })
 
-vim.keymap.set("n", "gr", builtin.lsp_references, {
+vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {
+	desc = "Code actions",
+})
+
+vim.keymap.del("n", "grn")
+
+vim.keymap.set("n", "rr", builtin.lsp_references, {
 	desc = "Find references",
 })
 
@@ -643,7 +643,7 @@ vim.keymap.set("n", "gt", builtin.lsp_type_definitions, {
 	desc = "Go to type definition",
 })
 
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.rename, {
 	desc = "Code actions",
 })
 
@@ -696,7 +696,9 @@ vim.keymap.set("n", "C", '"_C')
 
 vim.keymap.set("v", "d", '"_d')
 vim.keymap.set("v", "c", '"_c')
-
+vim.keymap.set("n", "U", "<C-r>", {
+	desc = "Redo",
+})
 --------------------------------------------------------
 -- Options
 --------------------------------------------------------
