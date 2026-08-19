@@ -630,12 +630,17 @@ vim.keymap.set("n", "gi", builtin.lsp_implementations, {
 })
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {
-	desc = "Code actions",
+	desc = "Rename",
 })
 
 vim.keymap.del("n", "grn")
+vim.keymap.del("n", "grr")
+vim.keymap.del("n", "gra")
+vim.keymap.del("n", "gri")
+vim.keymap.del("n", "grt")
+vim.keymap.del("n", "grx")
 
-vim.keymap.set("n", "rr", builtin.lsp_references, {
+vim.keymap.set("n", "gr", builtin.lsp_references, {
 	desc = "Find references",
 })
 
@@ -643,7 +648,7 @@ vim.keymap.set("n", "gt", builtin.lsp_type_definitions, {
 	desc = "Go to type definition",
 })
 
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.rename, {
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {
 	desc = "Code actions",
 })
 
